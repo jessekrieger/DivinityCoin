@@ -4,8 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "deploy-v2": "node ./scripts/deploy-v2.js",
-    "set-operator": "node ./scripts/set-operator.js",
     "ganache": "node ./scripts/start-ganache.js",
     "init-solhint": "./node_modules/.bin/solhint init-config",
     "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol contracts/*.sol",
