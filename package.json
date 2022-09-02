@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "deploy": "node ./scripts/deploy.js",
+    "verify": "node ./scripts/verify.js",
     "ganache": "node ./scripts/start-ganache.js",
     "init-solhint": "./node_modules/.bin/solhint init-config",
     "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol contracts/*.sol",

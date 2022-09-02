@@ -70,6 +70,28 @@ const config = convict({
       env: 'TEST_BLOCK',
     },
   },
+  deploy: {
+    divinity: {
+      format: String,
+      default: '0x0000000000000000000000000000000000000000',
+      env: 'DIVINITY_ADDRESS',
+    },
+    payment: {
+      format: String,
+      default: '0x0000000000000000000000000000000000000000',
+      env: 'PAYMENT_ADDRESS',
+    },
+    treasury: {
+      format: String,
+      default: '0x0000000000000000000000000000000000000000',
+      env: 'TREASURY_ADDRESS',
+    },
+    pricePerUnit: {
+      format: String,
+      default: '0',
+      env: 'PRICE_PER_UNIT',
+    },
+  },
   etherscan: {
     apiKey: {
       format: String,
