@@ -247,13 +247,24 @@ describe('TokenSaleImplementation', () => {
       await divinityCoin.connect(Treasury)
         .approve(tokenSaleImplementation.address, divinityAmount);
 
-      await tokenSaleImplementation
-        .connect(otherAccounts[0])
-        .buyWithAmount(paymentAmount);
       const expectedDivinityAmount = ethers.BigNumber.from('10')
         .pow(18)
         .mul(paymentAmount)
         .div(pricePerUnit);
+
+      await expect(tokenSaleImplementation
+        .connect(otherAccounts[0])
+        .buyWithAmount(paymentAmount))
+        .to
+        .emit(tokenSaleImplementation, 'BuyOrder')
+        .withArgs(
+          otherAccounts[0].address,
+          divinityCoin.address,
+          paymentToken.address,
+          expectedDivinityAmount,
+          paymentAmount,
+          ethers.utils.parseUnits('314.15', 6),
+        );
 
       expect(await divinityCoin.balanceOf(otherAccounts[0].address))
         .to.equal(expectedDivinityAmount);
@@ -380,9 +391,19 @@ describe('TokenSaleImplementation', () => {
         .approve(tokenSaleImplementation.address, divinityAmount);
 
       await paymentToken.connect(otherAccounts[0]).approve(tokenSaleImplementation.address, ethers.utils.parseUnits('314.15', 6));
-      await tokenSaleImplementation
+      await expect(tokenSaleImplementation
         .connect(otherAccounts[0])
-        .buyExactAmount(amount);
+        .buyExactAmount(amount))
+        .to
+        .emit(tokenSaleImplementation, 'BuyOrder')
+        .withArgs(
+          otherAccounts[0].address,
+          divinityCoin.address,
+          paymentToken.address,
+          amount,
+          ethers.utils.parseUnits('314.15', 6),
+          ethers.utils.parseUnits('314.15', 6),
+        );
 
       expect(await divinityCoin.balanceOf(otherAccounts[0].address)).to.equal(amount);
       expect(await divinityCoin.balanceOf(Treasury.address)).to.equal(divinityAmount.sub(amount));
