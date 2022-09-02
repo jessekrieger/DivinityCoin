@@ -4,7 +4,7 @@ const chai = require('chai');
 chai.use(waffle.solidity);
 const { expect } = chai;
 
-describe('DomainNameToken', () => {
+describe('Index', () => {
   
   it('should pass', () => {
     expect(true).to.equal(true);
