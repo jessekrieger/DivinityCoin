@@ -3,6 +3,15 @@
 pragma solidity ^0.8.0;
 
 interface ITokenSale {
+  event BuyOrder(
+    address buyer,
+    address divinityCoinAddress,
+    address paymentToken,
+    uint256 coinAmount,
+    uint256 paymentAmount,
+    uint256 pricePerUnit
+  );
+
   /// @dev divinityCoin, paymentToken, treasury, pricePerUnit
   function setConfigs(
     address,
