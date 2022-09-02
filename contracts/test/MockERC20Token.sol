@@ -27,4 +27,3 @@ contract MockERC20Token is ERC20, Ownable {
     _burn(account, amount);
   }
 }
-

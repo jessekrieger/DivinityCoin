@@ -58,7 +58,7 @@ contract TokenSaleImplementation is Destroyable, Initializable, ITokenSale {
   /// @param _paymentAmount amount of PaymentToken
   /// @return amount of DivinityCoin
   function getAmount(uint256 _paymentAmount) public view override returns (uint256) {
-      return Pricing.calculateOrderAmount(_paymentAmount, pricePerUnit, DivinityCoin.decimals());
+    return Pricing.calculateOrderAmount(_paymentAmount, pricePerUnit, DivinityCoin.decimals());
   }
 
   /// @notice Gets the needed amount of PaymentToken for getting the given amount of DivinityCoin
@@ -66,11 +66,9 @@ contract TokenSaleImplementation is Destroyable, Initializable, ITokenSale {
   /// @param _divinityAmount amount of DivinityCoin
   /// @return amount of PaymentToken
   function getCost(uint256 _divinityAmount) public view override returns (uint256) {
-      return Pricing.calculateOrderCost(_divinityAmount,
-                                        pricePerUnit,
-                                        DivinityCoin.decimals());
+    return Pricing.calculateOrderCost(_divinityAmount, pricePerUnit, DivinityCoin.decimals());
   }
-  
+
   /// @notice buy DivinityCoin with set amount of PaymentToken
   /// @dev buy DivinityCoin with set amount of PaymentToken.
   /// @param _paymentAmount amount of PaymentToken to buy DivinityCoin with
@@ -85,35 +83,46 @@ contract TokenSaleImplementation is Destroyable, Initializable, ITokenSale {
     uint256 resultingAmount = getAmount(_paymentAmount);
 
     require(resultingAmount > 0, "resulting amount must be greater than 0");
-    require(DivinityCoin.balanceOf(Treasury) >= resultingAmount, "not enough DivinityCoin in the treasury");
-    require(DivinityCoin.allowance(Treasury, address(this)) >= resultingAmount, "not enough DivinityCoin allowance in the treasury");
+    require(
+      DivinityCoin.balanceOf(Treasury) >= resultingAmount,
+      "not enough DivinityCoin in the treasury"
+    );
+    require(
+      DivinityCoin.allowance(Treasury, address(this)) >= resultingAmount,
+      "not enough DivinityCoin allowance in the treasury"
+    );
 
     PaymentToken.transferFrom(msg.sender, Treasury, _paymentAmount);
 
     DivinityCoin.transferFrom(Treasury, msg.sender, resultingAmount);
-    
   }
 
   /// @notice Buy exact DivinityCoin amount with PaymentToken
   /// @dev Buy exact DivinityCoin amount with PaymentToken
   /// @param _divinityAmount amount of DivinityCoin to buy
   function buyExactAmount(uint256 _divinityAmount) external override {
-      require(_divinityAmount > 0, "amount must be greater than 0");
-      require(DivinityCoin.balanceOf(Treasury) >= _divinityAmount, "not enough DivinityCoin in the treasury");
-      require(DivinityCoin.allowance(Treasury, address(this)) >= _divinityAmount, "not enough DivinityCoin allowance in the treasury");
-      
-      uint256 resultingCost = getCost(_divinityAmount);
-      
-      require(resultingCost > 0, "resulting cost must be greater than 0");
-      
-      require(PaymentToken.balanceOf(msg.sender) >= resultingCost, "not enough tokens");
-      require(
-              PaymentToken.allowance(msg.sender, address(this)) >= resultingCost,
-              "not enough allowance"
-              );
-      
-      PaymentToken.transferFrom(msg.sender, Treasury, resultingCost);
-      
-      DivinityCoin.transferFrom(Treasury, msg.sender, _divinityAmount);
+    require(_divinityAmount > 0, "amount must be greater than 0");
+    require(
+      DivinityCoin.balanceOf(Treasury) >= _divinityAmount,
+      "not enough DivinityCoin in the treasury"
+    );
+    require(
+      DivinityCoin.allowance(Treasury, address(this)) >= _divinityAmount,
+      "not enough DivinityCoin allowance in the treasury"
+    );
+
+    uint256 resultingCost = getCost(_divinityAmount);
+
+    require(resultingCost > 0, "resulting cost must be greater than 0");
+
+    require(PaymentToken.balanceOf(msg.sender) >= resultingCost, "not enough tokens");
+    require(
+      PaymentToken.allowance(msg.sender, address(this)) >= resultingCost,
+      "not enough allowance"
+    );
+
+    PaymentToken.transferFrom(msg.sender, Treasury, resultingCost);
+
+    DivinityCoin.transferFrom(Treasury, msg.sender, _divinityAmount);
   }
 }
