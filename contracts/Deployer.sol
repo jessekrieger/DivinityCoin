@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-import {Destroyable} from "./Destroyable.sol";
-
-contract Deployer is Destroyable {
+contract Deployer is Ownable {
   mapping(bytes32 => address[]) public deploys;
   mapping(bytes32 => uint256[]) public deploysSalts;
 

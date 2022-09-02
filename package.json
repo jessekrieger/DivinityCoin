@@ -13,8 +13,7 @@
     "compile": "./node_modules/hardhat/internal/cli/cli.js compile ",
     "force-compile": "./node_modules/hardhat/internal/cli/cli.js compile --force",
     "test": "./node_modules/hardhat/internal/cli/cli.js test",
-    "coverage": "./node_modules/hardhat/internal/cli/cli.js coverage",
-    "verify": "node ./scripts/verify.js"
+    "coverage": "./node_modules/hardhat/internal/cli/cli.js coverage"
   },
   "repository": {
     "type": "git",

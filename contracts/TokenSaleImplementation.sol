@@ -3,11 +3,11 @@ pragma solidity ^0.8.0;
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import {Destroyable} from "./Destroyable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ITokenSale} from "./interfaces/ITokenSale.sol";
 import {Pricing} from "./libraries/Pricing.sol";
 
-contract TokenSaleImplementation is Destroyable, Initializable, ITokenSale {
+contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
   IERC20Metadata public DivinityCoin;
   IERC20Metadata public PaymentToken;
   address public Treasury;
