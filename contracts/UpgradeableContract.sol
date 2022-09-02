@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import {Destroyable} from "./Destroyable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract UpgradeableContract is TransparentUpgradeableProxy, Destroyable {
+contract UpgradeableContract is Ownable, TransparentUpgradeableProxy {
   constructor(
     address _logic,
     address _admin,
