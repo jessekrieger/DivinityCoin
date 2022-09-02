@@ -95,12 +95,14 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
     PaymentToken.transferFrom(msg.sender, Treasury, _paymentAmount);
 
     DivinityCoin.transferFrom(Treasury, msg.sender, resultingAmount);
-    emit BuyOrder(msg.sender,
-                  address(DivinityCoin),
-                  address(PaymentToken),
-                  resultingAmount,
-                  _paymentAmount,
-                  pricePerUnit);
+    emit BuyOrder(
+      msg.sender,
+      address(DivinityCoin),
+      address(PaymentToken),
+      resultingAmount,
+      _paymentAmount,
+      pricePerUnit
+    );
   }
 
   /// @notice Buy exact DivinityCoin amount with PaymentToken
@@ -130,11 +132,13 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
     PaymentToken.transferFrom(msg.sender, Treasury, resultingCost);
 
     DivinityCoin.transferFrom(Treasury, msg.sender, _divinityAmount);
-    emit BuyOrder(msg.sender,
-                  address(DivinityCoin),
-                  address(PaymentToken),
-                  _divinityAmount,
-                  resultingCost,
-                  pricePerUnit);
+    emit BuyOrder(
+      msg.sender,
+      address(DivinityCoin),
+      address(PaymentToken),
+      _divinityAmount,
+      resultingCost,
+      pricePerUnit
+    );
   }
 }
