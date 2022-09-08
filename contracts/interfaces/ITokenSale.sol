@@ -21,7 +21,7 @@ interface ITokenSale {
     uint256 pricePerUnit
   );
 
-  /// @dev divinityCoin, paymentToken, treasury, pricePerUnit
+  /// @dev divinityCoin, paymentToken, treasury, buyPricePerUnit, sellPricePerUnit
   function setConfigs(
     address,
     address,
