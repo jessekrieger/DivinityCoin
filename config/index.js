@@ -86,10 +86,15 @@ const config = convict({
       default: '0x0000000000000000000000000000000000000000',
       env: 'TREASURY_ADDRESS',
     },
-    pricePerUnit: {
+    buyPricePerUnit: {
       format: String,
       default: '0',
-      env: 'PRICE_PER_UNIT',
+      env: 'BUY_PRICE_PER_UNIT',
+    },
+    sellPricePerUnit: {
+      format: String,
+      default: '0',
+      env: 'SELL_PRICE_PER_UNIT',
     },
   },
   etherscan: {

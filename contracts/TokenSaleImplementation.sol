@@ -11,7 +11,8 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
   IERC20Metadata public DivinityCoin;
   IERC20Metadata public PaymentToken;
   address public Treasury;
-  uint256 public pricePerUnit;
+  uint256 public buyPricePerUnit;
+  uint256 public sellPricePerUnit;
 
   constructor() {}
 
@@ -19,12 +20,14 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
     address _divinityCoin,
     address _paymentToken,
     address _treasury,
-    uint256 _pricePerUnit
+    uint256 _buyPricePerUnit,
+    uint256 _sellPricePerUnit
   ) public {
     DivinityCoin = IERC20Metadata(_divinityCoin);
     PaymentToken = IERC20Metadata(_paymentToken);
     Treasury = _treasury;
-    pricePerUnit = _pricePerUnit;
+    buyPricePerUnit = _buyPricePerUnit;
+    sellPricePerUnit = _sellPricePerUnit;
   }
 
   /// @notice set contract configuration
@@ -32,12 +35,13 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
   /// @param _divinityCoin address of the DivinityCoin contract. When set to address(0) it will leave the address unchanged
   /// @param _paymentToken address of the PaymentToken contract. When set to address(0) it will leave the address unchanged
   /// @param _treasury address of the Treasury contract. When set to address(0) it will leave the address unchanged
-  /// @param _pricePerUnit price per unit of DivinityCoin. When set to 0 it will leave the price unchanged
+  /// @param _buyPricePerUnit price per unit of DivinityCoin. When set to 0 it will leave the price unchanged
   function setConfigs(
     address _divinityCoin,
     address _paymentToken,
     address _treasury,
-    uint256 _pricePerUnit
+    uint256 _buyPricePerUnit,
+    uint256 _sellPricePerUnit
   ) external override onlyOwner {
     if (_divinityCoin != address(0)) {
       DivinityCoin = IERC20Metadata(_divinityCoin);
@@ -48,8 +52,11 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
     if (_treasury != address(0)) {
       Treasury = _treasury;
     }
-    if (_pricePerUnit > 0) {
-      pricePerUnit = _pricePerUnit;
+    if (_buyPricePerUnit > 0) {
+      buyPricePerUnit = _buyPricePerUnit;
+    }
+    if (_sellPricePerUnit > 0) {
+      sellPricePerUnit = _sellPricePerUnit;
     }
   }
 
@@ -57,16 +64,24 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
   /// @dev Gets the resulting amount of DivinityCoin using the given amount of PaymentToken
   /// @param _paymentAmount amount of PaymentToken
   /// @return amount of DivinityCoin
-  function getAmount(uint256 _paymentAmount) public view override returns (uint256) {
-    return Pricing.calculateOrderAmount(_paymentAmount, pricePerUnit, DivinityCoin.decimals());
+  function getBuyAmount(uint256 _paymentAmount) public view override returns (uint256) {
+    return Pricing.calculateOrderAmount(_paymentAmount, buyPricePerUnit, DivinityCoin.decimals());
   }
 
   /// @notice Gets the needed amount of PaymentToken for getting the given amount of DivinityCoin
   /// @dev Gets the needed amount of PaymentToken for getting the given amount of DivinityCoin
   /// @param _divinityAmount amount of DivinityCoin
   /// @return amount of PaymentToken
-  function getCost(uint256 _divinityAmount) public view override returns (uint256) {
-    return Pricing.calculateOrderCost(_divinityAmount, pricePerUnit, DivinityCoin.decimals());
+  function getBuyCost(uint256 _divinityAmount) public view override returns (uint256) {
+    return Pricing.calculateOrderCost(_divinityAmount, buyPricePerUnit, DivinityCoin.decimals());
+  }
+
+  /// @notice Gets the resulting amount of PaymentToken using the given amount of DivinityCoin
+  /// @dev Gets the resulting amount of PaymentToken using the given amount of DivinityCoin
+  /// @param _divinityAmount amount of DivinityCoin
+  /// @return amount of PaymentToken
+  function getSellCost(uint256 _divinityAmount) public view override returns (uint256) {
+    return Pricing.calculateOrderCost(_divinityAmount, sellPricePerUnit, DivinityCoin.decimals());
   }
 
   /// @notice buy DivinityCoin with set amount of PaymentToken
@@ -80,7 +95,7 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
       "not enough allowance"
     );
 
-    uint256 resultingAmount = getAmount(_paymentAmount);
+    uint256 resultingAmount = getBuyAmount(_paymentAmount);
 
     require(resultingAmount > 0, "resulting amount must be greater than 0");
     require(
@@ -101,7 +116,7 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
       address(PaymentToken),
       resultingAmount,
       _paymentAmount,
-      pricePerUnit
+      buyPricePerUnit
     );
   }
 
@@ -119,7 +134,7 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
       "not enough DivinityCoin allowance in the treasury"
     );
 
-    uint256 resultingCost = getCost(_divinityAmount);
+    uint256 resultingCost = getBuyCost(_divinityAmount);
 
     require(resultingCost > 0, "resulting cost must be greater than 0");
 
@@ -138,7 +153,44 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
       address(PaymentToken),
       _divinityAmount,
       resultingCost,
-      pricePerUnit
+      buyPricePerUnit
+    );
+  }
+
+  /// @notice Sell DivinityCoin for PaymentToken
+  /// @dev Sell DivinityCoin for PaymentToken
+  /// @param _divinityAmount amount of DivinityCoin to sell
+  function sellExactAmount(uint256 _divinityAmount) external override {
+    require(_divinityAmount > 0, "amount must be greater than 0");
+    require(DivinityCoin.balanceOf(msg.sender) >= _divinityAmount, "not enough tokens");
+    require(
+      DivinityCoin.allowance(msg.sender, address(this)) >= _divinityAmount,
+      "not enough allowance"
+    );
+
+    uint256 resultingCost = getSellCost(_divinityAmount);
+
+    require(resultingCost > 0, "resulting cost must be greater than 0");
+
+    require(
+      PaymentToken.balanceOf(Treasury) >= resultingCost,
+      "not enough payment tokens on Treasury"
+    );
+    require(
+      PaymentToken.allowance(Treasury, address(this)) >= resultingCost,
+      "not enough payment token allowance on Treasury"
+    );
+
+    DivinityCoin.transferFrom(msg.sender, Treasury, _divinityAmount);
+
+    PaymentToken.transferFrom(Treasury, msg.sender, resultingCost);
+    emit SellOrder(
+      msg.sender,
+      address(DivinityCoin),
+      address(PaymentToken),
+      _divinityAmount,
+      resultingCost,
+      sellPricePerUnit
     );
   }
 }

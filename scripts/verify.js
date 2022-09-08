@@ -40,12 +40,13 @@ async function main(version = '1.0.0') {
   const tokenSaleImplementationArtifact = await hre.artifacts.readArtifact('TokenSaleImplementation');
   const tokenSaleImplementation = new ethers.Contract(tokenSaleImplementationAddress, tokenSaleImplementationArtifact.abi, owner);
   const initBytes = tokenSaleImplementation.interface.encodeFunctionData(
-    'initialize(address,address,address,uint256)',
+    'initialize(address,address,address,uint256,uint256)',
     [
       config.get('deploy.divinity'),
       config.get('deploy.payment'),
       config.get('deploy.treasury'),
-      ethers.BigNumber.from(`${config.get('deploy.pricePerUnit')}`),
+      ethers.BigNumber.from(`${config.get('deploy.buyPricePerUnit')}`),
+      ethers.BigNumber.from(`${config.get('deploy.sellPricePerUnit')}`),
     ],
   );
   await hre.run('verify:verify', {
