@@ -35,7 +35,7 @@ interface ITokenSale {
   function getBuyCost(uint256) external view returns (uint256);
 
   function getSellCost(uint256) external view returns (uint256);
-  
+
   function buyWithAmount(uint256) external;
 
   function buyExactAmount(uint256) external;

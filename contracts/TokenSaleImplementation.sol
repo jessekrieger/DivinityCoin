@@ -13,7 +13,7 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
   address public Treasury;
   uint256 public buyPricePerUnit;
   uint256 public sellPricePerUnit;
-  
+
   constructor() {}
 
   function initialize(
@@ -76,12 +76,11 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
     return Pricing.calculateOrderCost(_divinityAmount, buyPricePerUnit, DivinityCoin.decimals());
   }
 
-
   /// @notice Gets the resulting amount of PaymentToken using the given amount of DivinityCoin
   /// @dev Gets the resulting amount of PaymentToken using the given amount of DivinityCoin
   /// @param _divinityAmount amount of DivinityCoin
   /// @return amount of PaymentToken
-  function getSellCost(uint256 _divinityAmount) public view override returns(uint256) {
+  function getSellCost(uint256 _divinityAmount) public view override returns (uint256) {
     return Pricing.calculateOrderCost(_divinityAmount, sellPricePerUnit, DivinityCoin.decimals());
   }
 
@@ -173,7 +172,10 @@ contract TokenSaleImplementation is Ownable, Initializable, ITokenSale {
 
     require(resultingCost > 0, "resulting cost must be greater than 0");
 
-    require(PaymentToken.balanceOf(Treasury) >= resultingCost, "not enough payment tokens on Treasury");
+    require(
+      PaymentToken.balanceOf(Treasury) >= resultingCost,
+      "not enough payment tokens on Treasury"
+    );
     require(
       PaymentToken.allowance(Treasury, address(this)) >= resultingCost,
       "not enough payment token allowance on Treasury"
