@@ -128,8 +128,12 @@ async function main(version = '1.0.0') {
       treasuryAddress = config.get('deploy.treasury');
     }
 
-    if (ethers.BigNumber.from(config.get('deploy.pricePerUnit')).isZero()) {
-      throw new Error('Price per unit is zero');
+    if (ethers.BigNumber.from(config.get('deploy.buyPricePerUnit')).isZero()) {
+      throw new Error('Buy price per unit is zero');
+    }
+
+    if (ethers.BigNumber.from(config.get('deploy.sellPricePerUnit')).isZero()) {
+      throw new Error('Sell price per unit is zero');
     }
 
     while (true) {
@@ -166,12 +170,13 @@ async function main(version = '1.0.0') {
       constructorBytes: constructorBytes({
         implementation: tokenSaleImplementation,
         admin: adminProxy,
-        initFunction: 'initialize(address,address,address,uint256)',
+        initFunction: 'initialize(address,address,address,uint256,uint256)',
         initArgs: [
           divinityCoinAddress,
           paymentTokenAddress,
           treasuryAddress,
-          ethers.BigNumber.from(config.get('deploy.pricePerUnit')),
+          ethers.BigNumber.from(config.get('deploy.buyPricePerUnit')),
+          ethers.BigNumber.from(config.get('deploy.sellPricePerUnit')),
         ],
       }),
     });
