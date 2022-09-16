@@ -1,0 +1,109 @@
+/* latin-ext */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Roboto/Roboto-Regular.ttf') format('ttf');
+    unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Roboto/Roboto-Regular.ttf') format('ttf');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+* {
+    font-family: 'Roboto',Helvetica,Arial,Lucida,sans-serif;
+    font-size: 14px;
+}
+body {
+    background-image: linear-gradient(90deg,#1f2350 0%,#642047 100%);
+}
+
+#root {
+    min-height: 900px;
+}
+
+.flex-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.box {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    color: #FFF;
+    padding: 10px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.border {
+    border: 1px solid #FFF;
+}
+
+label {
+    padding: 10px;
+}
+
+button {
+
+    background-color: #FFF;
+    color: #000;
+    border: 1px solid #FFF;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    min-width: 100px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-image: linear-gradient(90deg,#1f2350 0%,#642047 100%);
+    color: #FFF;
+    box-shadow: 0 0 10px #FFF;
+}
+
+button:active {
+    background-color: #FFF;
+    
+    color: #FFF;
+    box-shadow: 0 0 10px #000;
+}
+
+.hide {
+    display: none;
+}
+
+
+.centered-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 90vh;
+    box-sizing: border-box;
+}
+
+a {
+    color: #FFF;
+}

@@ -37,3 +37,16 @@ ETHERSCAN_API_KEY=_etherscan_api_key_
 ```
 npm run deploy
 ```
+
+
+### UI example
+
+- start ganache
+- copy generated private keys from ganache
+    - first key is deployment owner
+    - second key can be client
+- run deployment script
+- replace token sale address, test payment token, test `$DIVINE` address and treasury address in `./integration/public/addresses.json`
+- run `npm run mint-dev` to mint payment tokens to client address and `$DIVINE` to treasury address
+- run integration server `npm run integration-example` . This will start a http server on `http://localhost:22345` . Load the URL in browser.
+

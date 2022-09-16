@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>DIVINE Integration Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+        type="application/javascript"></script>
+    <script src="integration.js" type="application/javascript"></script>
+    
+  </head>
+  <body>
+    <div class='centered-box' id="root">
+
+
+      <div class="flex-column hide" id="app">
+        <div class="flex-row border">
+          <div class="box">
+            <h2>Payment Token Address</h2>
+            <h3 id="paymentTokenAddress"></h3>
+          </div>
+          <div class="box">
+            <h2>$DIVINE Token Address</h2>
+            <h3 id="divineTokenAddress"></h3>
+          </div>
+        </div>
+        
+        <div class='flex-row'>
+          <div class='box border'>
+            <div class='flex-column'>
+              <h3>Client Wallet</h3>
+              <h4 id='clientAddress'></h4>
+              <div class="box">
+                <h3>Payment Token Balance</h3>
+                <div id="paymentTokenBalance"></div>
+              </div>
+              
+              <div class="box">
+                <h3>$DIVINE Token Balance</h3>
+                <div id="divineTokenBalance"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class='box border'>
+            <div class='flex-column'>
+              <h3>Treasury Wallet</h3>
+              <h4 id='treasuryAddress'></h4>
+              <div class="box">
+                <h3>Payment Token Balance</h3>
+                <div id="treasuryPaymentTokenBalance"></div>
+                <button id="treasuryApprovePaymentToken" class="hide" class="button">Approve Token Sale</button>
+              </div>
+              
+              <div class="box">
+                <h3>$DIVINE Token Balance</h3>
+                <div id="treasuryDivineTokenBalance"></div>
+                <button id="treasuryApproveDivineToken" class="hide" class="button">Approve Token Sale</button>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class='flex-row'>
+          
+          <div class='box border'>
+            <h3>Buy Exact $DIVINE</h3>
+            <div class='box'>
+              <div class='flex-row'>
+                <label for='buyAmount'>$DIVINE Amount</label>
+                <input type='text' id='buyAmount' value='1' />
+              </div>
+              <div class='box'>
+                <h4>Due Payment</h4>
+              <span id='buyPrice'></span>
+              </div>
+              <div class='box'>
+                <button id='buyButton'>Buy</button>
+              </div>
+            </div>  
+          </div>
+          
+          <div class='box border'>
+          <h3>Buy Some $DIVINE</h3>
+          <div class='box'>
+            <div class='flex-row'>
+              <label for='paymentAmount'>Payment Amount</label>
+              <input type='text' id='paymentAmount' value='1' />
+            </div>
+            <div class='box'>
+              <h4>Estimated $DIVINE</h4>
+              <span id='buyEstimate'></span>
+            </div>
+            <div class='box'>
+              <button id='buySomeButton'>Buy</button>
+            </div>
+          </div>  
+          </div>
+          
+          <div class='box border'>
+            <h3>SELL $DIVINE</h3>
+            <div class='box'>
+              <div class='flex-row'>
+                <label for='sellAmount'>$DIVINE Amount</label>
+                <input type='text' id='sellAmount' value='1' />
+              </div>
+              <div class='box'>
+                <h4>Due To Receive</h4>
+              <span id='sellPrice'></span>
+              </div>
+              <div class='box'>
+                <button id='sellButton'>Sell</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class='flex-column hide' id='metamask_install'>
+        <div class='box'>
+          <h3>Metamask not installed</h3>
+          <p>Metamask is required to use this example. Please install it from <a href='https://metamask.io/download/'>https://metamask.io/download/</a></p>
+        </div>
+      </div>
+      
+      <div class='flex-column hide' id='metamask_connect'>
+        <div class='box'>
+          <button class='button' id='connectButton'>Connect to Metamask</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
