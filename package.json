@@ -13,7 +13,9 @@
     "compile": "./node_modules/hardhat/internal/cli/cli.js compile ",
     "force-compile": "./node_modules/hardhat/internal/cli/cli.js compile --force",
     "test": "./node_modules/hardhat/internal/cli/cli.js test",
-    "coverage": "./node_modules/hardhat/internal/cli/cli.js coverage"
+    "coverage": "./node_modules/hardhat/internal/cli/cli.js coverage",
+    "integration-example": "node ./integration/index.js",
+    "mint-dev": "node ./scripts/mint-dev.js"
   },
   "repository": {
     "type": "git",
@@ -50,6 +52,7 @@
     "convict": "^6.2.2",
     "dotenv": "^16.0.0",
     "ethers": "^5.6.4",
+    "express": "^4.18.1",
     "hardhat": "^2.9.3",
     "solc": "^0.8.13"
   },
