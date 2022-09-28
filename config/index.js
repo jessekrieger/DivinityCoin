@@ -21,20 +21,24 @@ const accountsFormat = {
 };
 
 const accountsFromMnemonic = {
-  name: 'accounts-from-mnemonic',
+  name: 'accounts-from-mnemonic-or-keys',
   validate: (val) => true,
   coerce: (val) => {
-    const mnemonic = !val ? ethers.Wallet.createRandom().mnemonic.phrase : val;
+    if (process.env.IS_MNEMONIC == 'true') {
+      const mnemonic = !val ? ethers.Wallet.createRandom().mnemonic.phrase : val;
 
-    const addressesKeys = [];
-    const ACCOUNTS_COUNT = parseInt(process.env.ACCOUNTS_COUNT || 100, 10);
-    for (let i = 0; i < ACCOUNTS_COUNT; i++) {
-      const wallet = ethers.Wallet.fromMnemonic(mnemonic, `m/44'/60'/0'/0/${i}`);
+      const addressesKeys = [];
+      const ACCOUNTS_COUNT = parseInt(process.env.ACCOUNTS_COUNT || 100, 10);
+      for (let i = 0; i < ACCOUNTS_COUNT; i++) {
+        const wallet = ethers.Wallet.fromMnemonic(mnemonic, `m/44'/60'/0'/0/${i}`);
 
-      addressesKeys.push(`${wallet.privateKey}`);
+        addressesKeys.push(`${wallet.privateKey}`);
+      }
+
+      return addressesKeys.filter((x) => !!x);
     }
-
-    return addressesKeys.filter((x) => !!x);
+    return val.split(',').filter((x) => !!x)
+      .map((k) => new ethers.Wallet(k).privateKey);
   },
 };
 
@@ -55,9 +59,14 @@ const config = convict({
       env: 'PROVIDER_HTTP',
     },
     accounts: {
-      format: 'accounts-from-mnemonic',
+      format: 'accounts-from-mnemonic-or-keys',
       default: null,
-      env: 'ACCOUNT_MNEMONIC',
+      env: 'ACCOUNTS',
+    },
+    isMnemonic: {
+      format: String,
+      default: 'true',
+      env: 'IS_MNEMONIC',
     },
     providerHttpHardhat: {
       format: String,

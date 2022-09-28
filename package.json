@@ -15,7 +15,9 @@
     "test": "./node_modules/hardhat/internal/cli/cli.js test",
     "coverage": "./node_modules/hardhat/internal/cli/cli.js coverage",
     "integration-example": "node ./integration/index.js",
-    "mint-dev": "node ./scripts/mint-dev.js"
+    "mint-dev": "node ./scripts/mint-dev.js",
+    "deploy-testnet": "node ./scripts/deploy-testnet.js",
+    "approve-dev": "node ./scripts/dev-approve-tokens.js"
   },
   "repository": {
     "type": "git",
