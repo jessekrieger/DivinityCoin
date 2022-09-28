@@ -6,10 +6,10 @@ const { ethers } = hre;
 const run = async () => {
   const [owner] = await ethers.getSigners();
   const artifact = await hre.artifacts.readArtifact('TokenSaleImplementation');
-  const tokenSaleAddress = await question.ask('TokenSale address: ');
+  const tokenSaleAddress = await question('TokenSale address: ');
   const tokenSale = new ethers.Contract(tokenSaleAddress, artifact.abi, owner);
 
-  const treasuryAddress = await question.ask('Treasury address: ');
+  const treasuryAddress = await question('Treasury address: ');
 
   const tx = await tokenSale
     .setConfigs(
