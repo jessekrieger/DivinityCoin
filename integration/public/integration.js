@@ -1,5 +1,6 @@
 const contracts = {};
 let addresses = {};
+let chain = {};
 let account;
 let tokenSaleOwner;
 let signer;
@@ -25,29 +26,28 @@ const get = async (url, responseType = 'json') => {
 
 const updateBalances = async () => {
   try {
-    select('#clientAddress').innerText = account;
-
+    
     const [paymentTokenBalance, divineTokenBalance] = await Promise.all([
       contracts.paymentToken.balanceOf(account),
       contracts.divineToken.balanceOf(account),
     ]);
-    select('#paymentTokenBalance').innerText = `${symbols.paymentToken} ${window.ethers.utils.formatUnits(paymentTokenBalance, decimals.paymentToken)}`;
-    select('#divineTokenBalance').innerText = `${symbols.divineToken} ${window.ethers.utils.formatUnits(divineTokenBalance, decimals.divineToken)}`;
-    select('#treasuryAddress').innerText = addresses.treasury;
+    //select('#paymentTokenBalance').innerText = `${symbols.paymentToken} ${window.ethers.utils.formatUnits(paymentTokenBalance, decimals.paymentToken)}`;
+    //select('#divineTokenBalance').innerText = `${symbols.divineToken} ${window.ethers.utils.formatUnits(divineTokenBalance, decimals.divineToken)}`;
+    //select('#treasuryAddress').innerText = addresses.treasury;
 
     const [treasuryPaymentTokenBalance, treasuryDivineTokenBalance] = await Promise.all([
       contracts.paymentToken.balanceOf(addresses.treasury),
       contracts.divineToken.balanceOf(addresses.treasury),
     ]);
-    select('#treasuryPaymentTokenBalance').innerText = `${symbols.paymentToken} ${window.ethers.utils.formatUnits(treasuryPaymentTokenBalance, decimals.paymentToken)}`;
-    select('#treasuryDivineTokenBalance').innerText = `${symbols.divineToken} ${window.ethers.utils.formatUnits(treasuryDivineTokenBalance, decimals.divineToken)}`;
+    //select('#treasuryPaymentTokenBalance').innerText = `${symbols.paymentToken} ${window.ethers.utils.formatUnits(treasuryPaymentTokenBalance, decimals.paymentToken)}`;
+    //select('#treasuryDivineTokenBalance').innerText = `${symbols.divineToken} ${window.ethers.utils.formatUnits(treasuryDivineTokenBalance, decimals.divineToken)}`;
 
     if (window.ethers.utils.getAddress(tokenSaleOwner) == window.ethers.utils.getAddress(account)) {
-      show('#treasuryApprovePaymentToken');
-      show('#treasuryApproveDivineToken');
+      //show('#treasuryApprovePaymentToken');
+      //show('#treasuryApproveDivineToken');
     } else {
-      hide('#treasuryApprovePaymentToken');
-      hide('#treasuryApproveDivineToken');
+      //hide('#treasuryApprovePaymentToken');
+      //hide('#treasuryApproveDivineToken');
     }
   } catch (e) {
     console.log(e);
@@ -102,10 +102,22 @@ const buy = async () => {
       alert('Insufficient funds');
       return;
     }
-    const currentApprovedAmount = await contracts.paymentToken.allowance(account, addresses.tokenSale);
-    if (currentApprovedAmount.lt(paymentAmountDue)) {
-      tx = await contracts.paymentToken.approve(addresses.tokenSale, paymentAmountDue);
-      await tx.wait();
+    if (select('#buyButton').innerText == 'Approve') {
+      const currentApprovedAmount = await contracts.paymentToken.allowance(account, addresses.tokenSale);
+      if (currentApprovedAmount.lt(paymentAmountDue)) {
+        try {
+          select('#buyButton').innerText = 'Approving...';
+          tx = await contracts.paymentToken.approve(addresses.tokenSale, paymentAmountDue);
+          await tx.wait(1);
+        } catch (e) {
+          alert(e.message);
+          select('#buyButton').innerText = 'Approve';
+
+          return;
+        }
+      }
+      select('#buyButton').innerText = 'Buy';
+      return;
     }
 
     tx = await contracts.tokenSale.buyExactAmount(divineAmountFormated);
@@ -150,12 +162,23 @@ const sell = async () => {
       alert('Insufficient funds');
       return;
     }
-    const currentApprovedAmount = await contracts.divineToken.allowance(account, addresses.tokenSale);
-    if (currentApprovedAmount.lt(divineAmountFormated)) {
-      tx = await contracts.divineToken.approve(addresses.tokenSale, divineAmountFormated);
-      await tx.wait();
+    if (select('#sellButton').innerText == 'Approve') {
+      const currentApprovedAmount = await contracts.divineToken.allowance(account, addresses.tokenSale);
+      if (currentApprovedAmount.lt(divineAmountFormated)) {
+        try {
+          select('#sellButton').innerText = 'Approving...';
+          tx = await contracts.divineToken.approve(addresses.tokenSale, divineAmountFormated);
+          await tx.wait(1);
+        } catch (e) {
+          alert(e.message);
+          select('#sellButton').innerText = 'Approve';
+          return;
+        }
+      }
+      select('#sellButton').innerText = 'Redeem';
+      return;
     }
-
+    
     tx = await contracts.tokenSale.sellExactAmount(divineAmountFormated);
     await tx.wait();
   } catch (e) {
@@ -172,7 +195,13 @@ const displayBuyPrice = async () => {
   const divineAmount = window.ethers.utils.parseUnits(buyDivineAmount, decimals.divineToken);
   const paymentDue = await contracts.tokenSale.getBuyCost(divineAmount);
   const paymentDueFormatted = window.ethers.utils.formatUnits(paymentDue, decimals.paymentToken);
+  const allowance = await contracts.paymentToken.allowance(account, addresses.tokenSale);
   select('#buyPrice').innerText = `${symbols.paymentToken} ${paymentDueFormatted}`;
+  if (allowance.lt(paymentDue)) {
+    select('#buyButton').innerText = 'Approve';
+  } else {
+    select('#buyButton').innerText = 'Buy';
+  }
 };
 
 const buyAmountChanged = () => {
@@ -186,6 +215,12 @@ const displaySellPrice = async () => {
   const paymentDue = await contracts.tokenSale.getSellCost(divineAmount);
   const paymentDueFormatted = window.ethers.utils.formatUnits(paymentDue, decimals.paymentToken);
   select('#sellPrice').innerText = `${symbols.paymentToken} ${paymentDueFormatted}`;
+  const allowance = await contracts.divineToken.allowance(account, addresses.tokenSale);
+  if (allowance.lt(divineAmount)) {
+    select('#sellButton').innerText = 'Approve';
+  } else {
+    select('#sellButton').innerText = 'Redeem';
+  }
 };
 
 const sellAmountChanged = () => {
@@ -195,11 +230,14 @@ const sellAmountChanged = () => {
 
 const displayPayPrice = async () => {
   const paymentAmount = select('#paymentAmount').value;
-  const paymentAmountFormated = window.ethers.utils.parseUnits(paymentAmount, decimals.paymentToken);
+  const paymentAmountFormated = window.ethers
+    .utils.parseUnits(paymentAmount, decimals.paymentToken);
 
   const divineAmountDue = await contracts.tokenSale.getBuyAmount(paymentAmountFormated);
-  const divineAmountDueFormatted = window.ethers.utils.formatUnits(divineAmountDue, decimals.divineToken);
+  const divineAmountDueFormatted = window.ethers
+    .utils.formatUnits(divineAmountDue, decimals.divineToken);
   select('#buyEstimate').innerText = `${symbols.divineToken} ${divineAmountDueFormatted}`;
+  
 };
 let timerPayPrice = 0;
 const paymentAmountChanged = () => {
@@ -208,33 +246,62 @@ const paymentAmountChanged = () => {
 };
 
 const treasuryApprovePaymentToken = async () => {
-  const tx = await contracts.paymentToken.approve(addresses.tokenSale, window.ethers.constants.MaxUint256);
+  const tx = await contracts.paymentToken
+    .approve(addresses.tokenSale, window.ethers.constants.MaxUint256);
   scheduleUpdateBalances();
 };
 
 const treasuryApproveDivineToken = async () => {
-  const tx = await contracts.divineToken.approve(addresses.tokenSale, window.ethers.constants.MaxUint256);
+  const tx = await contracts.divineToken
+    .approve(addresses.tokenSale, window.ethers.constants.MaxUint256);
   scheduleUpdateBalances();
 };
 
+const attachEvent = (selector, event, callback) => {
+  if (select(selector)) {
+    select(selector).addEventListener(event, callback);
+  }
+}
+
 const initUI = () => {
-  select('#connectButton').addEventListener('click', connectMetamask);
-  select('#buyButton').addEventListener('click', buy);
-  select('#sellButton').addEventListener('click', sell);
-  select('#buySomeButton').addEventListener('click', buySome);
-  select('#buyAmount').addEventListener('keyup', buyAmountChanged);
-  select('#sellAmount').addEventListener('keyup', sellAmountChanged);
-  select('#paymentAmount').addEventListener('keyup', paymentAmountChanged);
-  select('#treasuryApprovePaymentToken').addEventListener('click', treasuryApprovePaymentToken);
-  select('#treasuryApproveDivineToken').addEventListener('click', treasuryApproveDivineToken);
+  attachEvent('#connectButton', 'click', connectMetamask);
+  attachEvent('#buyButton', 'click', buy);
+  attachEvent('#sellButton', 'click', sell);
+  attachEvent('#buySomeButton', 'click', buySome);
+  attachEvent('#buyAmount', 'keyup', buyAmountChanged);
+  attachEvent('#sellAmount', 'keyup', sellAmountChanged);
+  attachEvent('#paymentAmount', 'keyup', paymentAmountChanged);
+  attachEvent('#treasuryApprovePaymentToken', 'click', treasuryApprovePaymentToken);
+  attachEvent('#treasuryApproveDivineToken', 'click', treasuryApproveDivineToken);
 };
 
+const switchChain = async () => {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_addEthereumChain',
+      params: [{
+        chainId: chain.chainId,
+        chainName: chain.chainName,
+        nativeCurrency: chain.nativeCurrency,
+        rpcUrls: chain.rpcUrls,
+        blockExplorerUrls: chain.blockExplorerUrls,
+      }],
+    });
+    window.location.reload();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+const initiateSwitchChain = () => {
+  select('#switchText').innerText = `Please switch to the ${chain.chainName} network in Metamask.`;
+  select('#switchButton').innerText = `Switch to ${chain.chainName}`;
+  select('#switchButton').addEventListener('click', switchChain);
+}
 const run = async () => {
-  abis.erc20 = await get('/erc20.json');
-  abis.tokenSale = await get('/token-sale.json');
-  addresses = await get('/addresses.json');
-  select('#paymentTokenAddress').innerHTML = addresses.paymentToken;
-  select('#divineTokenAddress').innerHTML = addresses.divineToken;
+  chain = await get('/integration/chain.json');
+  abis.erc20 = await get('/integration/erc20.json');
+  abis.tokenSale = await get('/integration/token-sale.json');
+  addresses = await get('/integration/addresses.json');
   initUI();
   if (!window.ethereum) {
     show('#metamask_install');
@@ -245,9 +312,17 @@ const run = async () => {
     if (connectedAccounts.length == 0) {
       show('#metamask_connect');
     } else {
-      show('#app');
-      await connectMetamask();
-      await initContracts();
+      const chainId = await window.ethereum.request({
+        method: 'eth_chainId',
+      });
+      if (chainId.toLowerCase() != chain.chainId.toLowerCase()) {
+        initiateSwitchChain();
+        show('#metamask_wrong_network');
+      } else {
+        show('#app');
+        await connectMetamask();
+        await initContracts();
+      }
     }
   }
 };
