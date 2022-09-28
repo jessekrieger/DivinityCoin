@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "set-treasury": "node ./scripts/set-configs.js",
     "wallet": "node ./scripts/create-wallet.js",
     "deploy": "node ./scripts/deploy.js",
     "verify": "node ./scripts/verify.js",
